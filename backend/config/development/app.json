@@ -1,9 +1,10 @@
 {
   "cookieSecret": "johnnyevenplatform",
   "database": {
+    "host": "localhost",
+    "port": 3306,
     "user": "root",
     "password": "84@41%%wi96^4",
-    "database": "main",
-    "storage": "./data/data.db"
+    "database": "operation.js"
   }
 }

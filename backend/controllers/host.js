@@ -30,10 +30,33 @@ exports.add = function(req, res, next) {
         };
         return next(err, req, res);
     }
-    var password = input.password,
-        key = input.key;
+    var password = req.param('password'),
+        key = req.param('key');
 
-    var Host = require('../models/Host');
-    var crypto = require('crypto');
-    var md5 = crypto.createHash('md5');
+    var Host = require('../proxy').Host;
+    var params = {
+        name: name,
+        host: host,
+        login_type: login_type,
+        username: username
+    };
+    if(login_type == 0) {
+        var crypto = require('crypto');
+        var md5 = crypto.createHash('md5');
+        params.password = md5.update(password).digest('hex');
+    } else {
+        params.key = key;
+    }
+    if(port) {
+        params.port = port;
+    }
+    Host.save(params, function(err) {
+        if(err) {
+            return next(err, req, res);
+        }
+        res.json({
+            status: 200,
+            code: 0
+        });
+    });
 };

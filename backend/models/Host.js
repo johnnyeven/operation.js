@@ -3,11 +3,21 @@ module.exports = function(sequelize, DataType) {
 		id: DataType.INTEGER,
 		name: DataType.STRING,
 		host: DataType.STRING,
-		port: DataType.INTEGER,
+		port: {
+			type: DataType.INTEGER,
+			allowNull: false,
+			defaultValue: 22
+		},
 		login_type: DataType.INTEGER,
 		username: DataType.STRING,
-		password: DataType.STRING,
-		key: DataType.STRING
+		password: {
+			type: DataType.STRING,
+			defaultValue: ''
+		},
+		key: {
+			type: DataType.STRING,
+			defaultValue: ''
+		}
 	}, {
 		tableName: 'hosts',
 		timestamps: false
