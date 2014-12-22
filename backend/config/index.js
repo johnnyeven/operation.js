@@ -1,4 +1,5 @@
 var app = require('../app');
-var config = require('./' + app.get('env') + '/app');
+var path = './' + app.get('env') + '/app'
+var config = require(path);
 
 module.exports = config;

@@ -4,6 +4,7 @@ var path = require('path');
 var compression = require('compression');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var validator = require('express-validator');
 var session = require('express-session');
 //var MongoStore = require('connect-mongo')(session);
 var log4js = require('log4js');
@@ -13,8 +14,8 @@ var app = express();
 // enviroment
 // app.set('env', 'production');
 app.set('env', 'development');
-
 module.exports = app;
+
 var config = require('./config');
 
 // view engine setup
@@ -53,6 +54,22 @@ app.use(compression({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(validator({
+    errorFormatter: function(param, msg, value) {
+        var namespace = param.split('.')
+            , root      = namespace.shift()
+            , formParam = root;
+
+        while(namespace.length) {
+            formParam += '[' + namespace.shift() + ']';
+        }
+        return {
+            param : formParam,
+            msg   : msg,
+            value : value
+        };
+    }
+}));
 app.use(cookieParser());
 app.use(session({
     secret: config.cookieSecret,
@@ -78,21 +95,15 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.json({
-            message: err.message,
-            error: err
-        })
+        res.json(err)
     });
 } else {
 // production error handler
 // no stacktraces leaked to user
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.json({
-            message: err.message,
-            error: {}
-        })
+        res.json(err)
     });
 }
 
-//require('./modules');
+require('./models');
