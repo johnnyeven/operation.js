@@ -60,3 +60,7 @@ exports.add = function(req, res, next) {
         });
     });
 };
+
+exports.read = function(req, res, next) {
+
+};
