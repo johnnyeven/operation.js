@@ -61,6 +61,73 @@ exports.add = function(req, res, next) {
     });
 };
 
-exports.read = function(req, res, next) {
+exports.delete = function(req, res, next) {
+    req.assert('id', 'Invalid ID').notEmpty();
+    var errors = req.validationErrors(true);
+    if(errors) {
+        var err = {
+            status: 400,
+            message: errors
+        };
+        return next(err, req, res);
+    }
 
+    var param = req.param('id');
+    var ids = param.split(',');
+    if(ids.length > 0) {
+        var _ = require('underscore');
+        if(_.every(ids, function(item, index, ids) {
+            return !isNaN(item);
+        })) {
+            var Host = require('../proxy').Host;
+            Host.delete({
+                id: ids
+            }, {}, function(affectedRows) {
+                res.json({
+                    affected_rows: affectedRows
+                });
+            });
+        } else {
+            var err = {
+                status: 400,
+                message: 'Invalid ids'
+            };
+            return next(err, req, res);
+        }
+    }
+};
+
+exports.read = function(req, res, next) {
+    req.assert('page', 'Invalid page').optional().isInt();
+    req.assert('limit', 'Invalid limit').optional().isInt();
+    var errors = req.validationErrors(true);
+    if(errors) {
+        var err = {
+            status: 400,
+            message: errors
+        };
+        return next(err, req, res);
+    }
+
+    var page = parseInt(req.param('page')),
+        limit = parseInt(req.param('limit'));
+    if(!page) page = 1;
+    if(!limit) limit = 10;
+    if(limit > 500) limit = 500;
+    var offset = (page - 1) * limit;
+
+    var Host = require('../proxy').Host;
+    Host.read({}, {
+        limit: limit,
+        offset: offset
+    }, function(err, results) {
+        if(err) {
+            return next(err, req, res);
+        }
+        if(results && results.length > 0) {
+            res.json(results);
+        } else {
+            res.json([]);
+        }
+    });
 };
