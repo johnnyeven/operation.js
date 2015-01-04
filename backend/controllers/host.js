@@ -20,7 +20,7 @@ exports.add = function(req, res, next) {
     if(login_type == 0) {   //用户名密码
         req.assert('password', 'Invalid password').notEmpty();
     } else {                //密钥
-        req.assert('key', 'Invalid key').notEmpty();
+        req.assert('key', 'Invalid key').notEmpty().isInt();
     }
     errors = req.validationErrors(true);
     if(errors) {

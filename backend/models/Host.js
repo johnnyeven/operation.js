@@ -15,8 +15,8 @@ module.exports = function(sequelize, DataType) {
 			defaultValue: ''
 		},
 		key: {
-			type: DataType.STRING,
-			defaultValue: ''
+			type: DataType.INTEGER,
+			defaultValue: 0
 		}
 	}, {
 		tableName: 'hosts',
